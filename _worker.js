@@ -53,195 +53,347 @@ const HOMEPAGE_HTML = `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cloudflare 加速面板</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-  :root {
-    --bg-dark: #0d0d0d;
-    --bg-light: #f9f9f9;
-    --text-dark: #111;
-    --text-light: #f5f5f5;
-    --accent: #4da3ff;
-    --card-bg-dark: rgba(255,255,255,0.04);
-    --card-bg-light: rgba(255,255,255,0.9);
-    --border-dark: rgba(255,255,255,0.08);
-    --border-light: #e5e5e5;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-dark);
-    color: var(--text-light);
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    transition: background 0.4s ease, color 0.4s ease;
-  }
-  body.light-mode {
-    background: var(--bg-light);
-    color: var(--text-dark);
-  }
-
-  .container {
-    width: 100%;
-    max-width: 760px;
-    background: var(--card-bg-dark);
-    backdrop-filter: blur(20px);
-    border-radius: 1rem;
-    padding: 2.5rem;
-    border: 1px solid var(--border-dark);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    transition: all 0.4s ease;
-  }
-  body.light-mode .container {
-    background: var(--card-bg-light);
-    border: 1px solid var(--border-light);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-  }
-
-  h1 {
-    font-size: 2.4rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2rem;
-    letter-spacing: -0.5px;
-  }
-
-  .section-box {
-    background: rgba(255,255,255,0.03);
-    padding: 1.8rem;
-    border-radius: 0.8rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 2rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  body.light-mode .section-box {
-    background: #fff;
-    border: 1px solid #eee;
-  }
-  .section-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  }
-
-  label {
-    font-weight: 600;
-    font-size: 0.95rem;
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-
-  input, select, button {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    color: inherit;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    outline: none;
-  }
-  body.light-mode input,
-  body.light-mode select {
-    background: #fafafa;
-    border: 1px solid #ddd;
-    color: var(--text-dark);
-  }
-  input:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(77,163,255,0.3);
-  }
-
-  button {
-    background: var(--accent);
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  button:hover {
-    background: #368ae6;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(77,163,255,0.4);
-  }
-
-  .result-box {
-    background: rgba(255,255,255,0.05);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    word-break: break-all;
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  body.light-mode .result-box {
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-  }
-
-  .toggle-mode {
-    display: inline-block;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-top: -1rem;
-    margin-bottom: 1.5rem;
-    text-align: right;
-    width: 100%;
-    color: var(--accent);
-  }
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="toggle-mode" onclick="document.body.classList.toggle('light-mode')">🌙 切换模式</div>
-  <h1>⚡ Cloudflare 加速面板</h1>
-
-  <div class="section-box">
-    <label for="target">目标网址</label>
-    <input type="text" id="target" placeholder="例如：https://example.com">
-  </div>
-
-  <div class="section-box">
-    <label for="speed">加速等级</label>
-    <select id="speed">
-      <option value="1">普通</option>
-      <option value="2">快速</option>
-      <option value="3">极速</option>
-    </select>
-  </div>
-
-  <div class="section-box">
-    <button onclick="startAccelerate()">🚀 开始加速</button>
-    <div class="result-box" id="result">等待输入...</div>
-  </div>
-</div>
-
-<script>
-  function startAccelerate(){
-    const url = document.getElementById('target').value.trim();
-    const level = document.getElementById('speed').value;
-    if(!url){
-      document.getElementById('result').textContent = '❌ 请输入网址';
-      return;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare 加速</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,${encodeURIComponent(LIGHTNING_SVG)}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 1rem;
     }
-    document.getElementById('result').textContent = `正在以等级 ${level} 加速 ${url} ...`;
-    // 模拟处理逻辑
-    setTimeout(()=>{
-      document.getElementById('result').textContent = `✅ 加速完成：${url}`;
-    },1500);
-  }
-</script>
+    .light-mode {
+      background: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
+      color: #111827;
+    }
+    .dark-mode {
+      background: linear-gradient(to bottom right, #1f2937, #374151);
+      color: #e5e7eb;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    .light-mode .container {
+      background: #ffffff;
+    }
+    .dark-mode .container {
+      background: #1f2937;
+    }
+    .section-box {
+      background: linear-gradient(to bottom, #ffffff, #f3f4f6);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dark-mode .section-box {
+      background: linear-gradient(to bottom, #374151, #1f2937);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.5rem;
+      font-size: 1.2rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.9rem;
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+    .result-text {
+      word-break: break-all;
+      overflow-wrap: break-word;
+      font-size: 0.95rem;
+      max-width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      background: #f3f4f6;
+    }
+    .dark-mode .result-text {
+      background: #2d3748;
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+      .section-box {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+      p {
+        font-size: 0.875rem;
+      }
+      input {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+        min-height: 44px;
+      }
+      button {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        min-height: 44px;
+      }
+      .flex.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .github-buttons, .docker-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .result-text {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+      }
+      footer {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <button onclick="toggleTheme()" class="theme-toggle bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+    <span class="sun">☀️</span>
+    <span class="moon hidden">🌙</span>
+  </button>
+  <div class="container mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-8">Cloudflare 加速下载</h1>
+
+    <!-- GitHub 链接转换 -->
+    <div class="section-box">
+      <h2 class="text-xl font-semibold mb-2">⚡ GitHub 文件加速</h2>
+      <p class="text-gray-600 dark:text-gray-300 mb-4">输入 GitHub 文件链接，自动转换为加速链接。也可以直接在链接前加上本站域名使用。</p>
+      <div class="flex gap-2 mb-2">
+        <input
+          id="github-url"
+          type="text"
+          placeholder="请输入 GitHub 文件链接，例如：https://github.com/user/repo/releases/..."
+          class="flex-grow p-2 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+        >
+        <button
+          onclick="convertGithubUrl()"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
+          获取加速链接
+        </button>
+      </div>
+      <p id="github-result" class="mt-2 text-green-600 dark:text-green-400 result-text hidden"></p>
+      <div id="github-buttons" class="flex gap-2 mt-2 github-buttons hidden">
+        <button onclick="copyGithubUrl()" class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition w-full">📋 复制链接</button>
+        <button onclick="openGithubUrl()" class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition w-full">🔗 打开链接</button>
+      </div>
+    </div>
+
+    <!-- Docker 镜像加速 -->
+    <div class="section-box">
+      <h2 class="text-xl font-semibold mb-2">🐳 Docker 镜像加速</h2>
+      <p class="text-gray-600 dark:text-gray-300 mb-4">输入原镜像地址（如 nginx 或 ghcr.io/user/repo），获取加速拉取命令。</p>
+      <div class="flex gap-2 mb-2">
+        <input
+          id="docker-image"
+          type="text"
+          placeholder="请输入镜像地址，例如：nginx 或 ghcr.io/user/repo"
+          class="flex-grow p-2 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+        >
+        <button
+          onclick="convertDockerImage()"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
+          获取加速命令
+        </button>
+      </div>
+      <p id="docker-result" class="mt-2 text-green-600 dark:text-green-400 result-text hidden"></p>
+      <div id="docker-buttons" class="flex gap-2 mt-2 docker-buttons hidden">
+        <button onclick="copyDockerCommand()" class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition w-full">📋 复制命令</button>
+      </div>
+    </div>
+
+    <footer class="mt-6 text-center text-gray-500 dark:text-gray-400">
+      Powered by ：公益项目且用且珍惜！
+    </footer>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // 动态获取当前域名
+    const currentDomain = window.location.hostname;
+
+    // 主题切换
+    function toggleTheme() {
+      const body = document.body;
+      const sun = document.querySelector('.sun');
+      const moon = document.querySelector('.moon');
+      if (body.classList.contains('light-mode')) {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        moon.classList.add('hidden');
+        sun.classList.remove('hidden');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // 初始化主题
+    if (localStorage.getItem('theme') === 'dark') {
+      toggleTheme();
+    }
+
+    // 显示弹窗提示
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove(isError ? 'bg-green-500' : 'bg-red-500');
+      toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // 复制文本的通用函数
+    function copyToClipboard(text) {
+      // 尝试使用 navigator.clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text).catch(err => {
+          console.error('Clipboard API failed:', err);
+          return false;
+        });
+      }
+      // 后备方案：使用 document.execCommand
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        return successful ? Promise.resolve() : Promise.reject(new Error('Copy command failed'));
+      } catch (err) {
+        document.body.removeChild(textarea);
+        return Promise.reject(err);
+      }
+    }
+
+    // GitHub 链接转换
+    let githubAcceleratedUrl = '';
+    function convertGithubUrl() {
+      const input = document.getElementById('github-url').value.trim();
+      const result = document.getElementById('github-result');
+      const buttons = document.getElementById('github-buttons');
+      if (!input) {
+        showToast('请输入有效的 GitHub 链接', true);
+        result.classList.add('hidden');
+        buttons.classList.add('hidden');
+        return;
+      }
+      if (!input.startsWith('https://')) {
+        showToast('链接必须以 https:// 开头', true);
+        result.classList.add('hidden');
+        buttons.classList.add('hidden');
+        return;
+      }
+
+      // 保持现有格式：域名/https://原始链接
+      githubAcceleratedUrl = 'https://' + currentDomain + '/https://' + input.substring(8);
+      result.textContent = '加速链接: ' + githubAcceleratedUrl;
+      result.classList.remove('hidden');
+      buttons.classList.remove('hidden');
+      copyToClipboard(githubAcceleratedUrl).then(() => {
+        showToast('已复制到剪贴板');
+      }).catch(err => {
+        showToast('复制失败: ' + err.message, true);
+      });
+    }
+
+    function copyGithubUrl() {
+      copyToClipboard(githubAcceleratedUrl).then(() => {
+        showToast('已手动复制到剪贴板');
+      }).catch(err => {
+        showToast('手动复制失败: ' + err.message, true);
+      });
+    }
+
+    function openGithubUrl() {
+      window.open(githubAcceleratedUrl, '_blank');
+    }
+
+    // Docker 镜像转换
+    let dockerCommand = '';
+    function convertDockerImage() {
+      const input = document.getElementById('docker-image').value.trim();
+      const result = document.getElementById('docker-result');
+      const buttons = document.getElementById('docker-buttons');
+      if (!input) {
+        showToast('请输入有效的镜像地址', true);
+        result.classList.add('hidden');
+        buttons.classList.add('hidden');
+        return;
+      }
+      dockerCommand = 'docker pull ' + currentDomain + '/' + input;
+      result.textContent = '加速命令: ' + dockerCommand;
+      result.classList.remove('hidden');
+      buttons.classList.remove('hidden');
+      copyToClipboard(dockerCommand).then(() => {
+        showToast('已复制到剪贴板');
+      }).catch(err => {
+        showToast('复制失败: ' + err.message, true);
+      });
+    }
+
+    function copyDockerCommand() {
+      copyToClipboard(dockerCommand).then(() => {
+        showToast('已手动复制到剪贴板');
+      }).catch(err => {
+        showToast('手动复制失败: ' + err.message, true);
+      });
+    }
+  </script>
 </body>
 </html>
-
 `;
 
 async function handleToken(realm, service, scope) {
