@@ -186,6 +186,7 @@ const HOMEPAGE_HTML = `
     }
   </style>
 </head>
+<script defer src="http://dns.nas.td:3300/script.js" data-website-id="5eedba9e-c201-407d-a7c2-d585e372e059"></script>
 <body class="light-mode">
   <button onclick="toggleTheme()" class="theme-toggle bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
     <span class="sun">☀️</span>
